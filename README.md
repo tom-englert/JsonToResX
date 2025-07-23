@@ -1,6 +1,6 @@
 
 # JsonToResX
-[![Build status](https://ci.appveyor.com/api/projects/status/TODO/branch/main?svg=true)](https://ci.appveyor.com/project/tom-englert/jsontoresx/branch/main)
+[![Build status](https://ci.appveyor.com/api/projects/status/bd2vy188trmegnar/branch/main?svg=true)](https://ci.appveyor.com/project/tom-englert/jsontoresx/branch/main)
 [![NuGet Status](https://img.shields.io/nuget/v/TomsToolbox.JsonToResX.svg)](https://www.nuget.org/packages/TomsToolbox.JsonToResX/)
 
 A DotNet command line tool to convert .json resrouces files used in angular to .resx files and vice versa.
