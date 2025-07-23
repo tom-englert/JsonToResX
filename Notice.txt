@@ -1,0 +1,12 @@
+This product bundles the following components under the described licenses:
+
+--------------------------------------------------------------------------------
+
+Cocona.Lite
+
+Id:        Cocona.Lite
+Version:   2.2.0
+Project:   https://github.com/mayuki/Cocona
+Copyright: Copyright 2020-present Mayuki Sawatari
+License:   MIT
+

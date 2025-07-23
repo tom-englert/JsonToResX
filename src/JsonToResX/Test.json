@@ -1,0 +1,5 @@
+{
+  "app.title": "My Application",
+  "app.subtitle": "Welcome to my application",
+  "app.greeting": "Hello {{name}}"
+}
