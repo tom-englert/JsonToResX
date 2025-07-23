@@ -51,19 +51,21 @@ This tool will convert the placeholders accordingly, so you can take advantage o
 
 ## Usage
 ```
-Usage: JsonToResX [--input <String>] [--output <String>]
+Usage: JsonToResX [--help] [--version] input output
 
 JsonToResX
 
+Arguments:
+  0: input      (Required)
+  1: output     (Required)
+
 Options:
-  --input <String>     Input file, either a .json file or a .resx file
-  --output <String>    Output file, either a .resx file or a .json file
-  -h, --help           Show help message
-  --version            Show version
+  -h, --help    Show help message
+  --version     Show version
 ```
 ## Example
 
 ```
 dotnet tool install TomsToolbox.JsonToResX -g
-JsonToResX --input Resources.json --output Resources.resx
+JsonToResX Resources.json Resources.resx
 ```

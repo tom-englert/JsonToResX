@@ -2,13 +2,17 @@
   "profiles": {
     "JsonToResX": {
       "commandName": "Project",
-      "commandLineArgs": "--input Test.json --output Test.resx",
+      "commandLineArgs": "Test.json Test.resx",
       "workingDirectory": "."
     },
     "ResXToJson": {
       "commandName": "Project",
-      "commandLineArgs": "--input Test.resx --output Test.json",
+      "commandLineArgs": "Test.resx Test.json",
       "workingDirectory": "."
+    },
+    "Help": {
+      "commandName": "Project",
+      "commandLineArgs": "-h"
     }
   }
 }

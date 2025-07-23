@@ -5,7 +5,7 @@ namespace JsonToResX;
 
 internal static partial class Infrastructure
 {
-    public static int ProcessFileConversion(string input, string output)
+    public static int ProcessFileConversion([Argument] string input,  [Argument] string output)
     {
         try
         {
