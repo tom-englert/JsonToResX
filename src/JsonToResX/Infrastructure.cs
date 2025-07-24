@@ -1,6 +1,8 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Tests")]
+
 namespace JsonToResX;
 
 internal static partial class Infrastructure
@@ -22,13 +24,13 @@ internal static partial class Infrastructure
 
             if (inputExtension.Equals(".json", StringComparison.OrdinalIgnoreCase) && outputExtension.Equals(".resx", StringComparison.OrdinalIgnoreCase))
             {
-                ConvertToResX(input, output);
+                ConvertToResX(new(input), new(output));
                 return 0;
             }
 
             if (inputExtension.Equals(".resx", StringComparison.OrdinalIgnoreCase) && outputExtension.Equals(".json", StringComparison.OrdinalIgnoreCase))
             {
-                ConvertToJson(input, output);
+                ConvertToJson(new(input), new(output));
                 return 0;
             }
 
@@ -41,10 +43,10 @@ internal static partial class Infrastructure
         }
     }
 
-    [GeneratedRegex(@"{{\s*(\S+)\s*}}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"{{\s?([^{}\s]+)\s?}}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
     private static partial Regex JsonPlaceholderExpression();
 
-    [GeneratedRegex(@"\${\s*(\S+)\s*}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"\${\s?([^{}\s]+)\s?}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
     private static partial Regex ResxPlaceholderExpression();
 
     private static string ConvertJsonToResxPlaceholder(this string value)
@@ -59,10 +61,9 @@ internal static partial class Infrastructure
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
-    private static void ConvertToResX(string input, string output)
+    public static ResourceFile ConvertToResX(string input)
     {
-        var jsonContent = File.ReadAllText(input);
-        var jsonObject = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent) ?? throw new InvalidOperationException("Failed to deserialize JSON content.");
+        var jsonObject = JsonSerializer.Deserialize<Dictionary<string, string>>(input) ?? throw new InvalidOperationException("Failed to deserialize JSON content.");
 
         var resourceFile = new ResourceFile();
 
@@ -70,22 +71,37 @@ internal static partial class Infrastructure
         {
             resourceFile.SetValue(node.Key.Replace('.', '_'), node.Value.ConvertJsonToResxPlaceholder());
         }
+        
+        return resourceFile;
+    }
 
-        resourceFile.Save(output);
+    private static void ConvertToResX(FileInfo input, FileInfo output)
+    {
+        var jsonContent = File.ReadAllText(input.FullName);
+        
+        var resourceFile = ConvertToResX(jsonContent);
+        
+        resourceFile.Save(output.FullName);
 
         Console.WriteLine($"Successfully converted JSON to ResX: {output}");
     }
 
-    private static void ConvertToJson(string input, string output)
+    private static void ConvertToJson(FileInfo input, FileInfo output)
     {
         var resourceFile = new ResourceFile(input);
 
+        var jsonContent = ConvertToJson(resourceFile);
+
+        File.WriteAllText(output.FullName, jsonContent);
+
+        Console.WriteLine($"Successfully converted ResX to JSON: {output}");
+    }
+
+    public static string ConvertToJson(ResourceFile resourceFile)
+    {
         var jsonObject = resourceFile.GetNodes().ToDictionary(item => item.Key.Replace('_', '.'), item => item.Text?.ConvertResxToJsonPlaceholder());
 
         var jsonContent = JsonSerializer.Serialize(jsonObject, JsonSerializerOptions);
-
-        File.WriteAllText(output, jsonContent);
-
-        Console.WriteLine($"Successfully converted ResX to JSON: {output}");
+        return jsonContent;
     }
 }

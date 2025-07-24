@@ -90,8 +90,7 @@ public class ResourceFile
     private readonly XName _valueNodeName;
     private readonly XName _commentNodeName;
 
-
-    private ResourceFile(XDocument document)
+    public ResourceFile(XDocument document)
     {
         _document = document;
 
@@ -104,7 +103,7 @@ public class ResourceFile
         UpdateNodes();
     }
 
-    public ResourceFile(string file) : this(XDocument.Load(file))
+    public ResourceFile(FileInfo file) : this(XDocument.Load(file.FullName))
     {
     }
 
@@ -255,5 +254,10 @@ public class ResourceFile
 
             return nameAttribute ?? throw new InvalidOperationException("Invalid resource file: No name attribute");
         }
+    }
+
+    public override string ToString()
+    {
+        return _document.ToString(SaveOptions.OmitDuplicateNamespaces);
     }
 }

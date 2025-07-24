@@ -4,6 +4,7 @@ environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 build_script:
 - dotnet build src/JsonToResX.sln --configuration Release
-test: off
+test_script:
+- dotnet test src/JsonToResX.sln --configuration Release --no-build --verbosity normal
 artifacts:
 - path: ./*.nupkg
