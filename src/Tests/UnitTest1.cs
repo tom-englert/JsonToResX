@@ -93,7 +93,7 @@ public class Tests
     {
         var result = Infrastructure.ConvertToJson(new ResourceFile(XDocument.Parse(ResX)));
 
-        Assert.That(result, Is.EqualTo(Json));
+        Assert.That(Normalize(result), Is.EqualTo(Normalize(Json)));
     }
 
     [Test]
@@ -101,6 +101,11 @@ public class Tests
     {
         var result = Infrastructure.ConvertToResX(Json);
 
-        Assert.That(result.ToString(), Is.EqualTo(ResX.Trim()));
+        Assert.That(Normalize(result.ToString()), Is.EqualTo(Normalize(ResX)));
+    }
+
+    private static string Normalize(string value)
+    {
+        return value.Replace("\r\n", "\n").Trim();
     }
 }
