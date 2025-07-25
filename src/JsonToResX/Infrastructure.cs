@@ -7,7 +7,7 @@ namespace JsonToResX;
 
 internal static partial class Infrastructure
 {
-    public static int ProcessFileConversion([Argument] string input,  [Argument] string output)
+    public static int ProcessFileConversion([Argument] string input, [Argument] string output)
     {
         try
         {
@@ -24,7 +24,7 @@ internal static partial class Infrastructure
 
             if (inputExtension.Equals(".json", StringComparison.OrdinalIgnoreCase) && outputExtension.Equals(".resx", StringComparison.OrdinalIgnoreCase))
             {
-                ConvertToResX(new(input), new(output));
+                ConvertToResX(new(input), new FileInfo(output));
                 return 0;
             }
 
@@ -61,26 +61,33 @@ internal static partial class Infrastructure
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
-    public static ResourceFile ConvertToResX(string input)
+    public static ResourceFile ConvertToResX(string input, ResourceFile output)
     {
         var jsonObject = JsonSerializer.Deserialize<Dictionary<string, string>>(input) ?? throw new InvalidOperationException("Failed to deserialize JSON content.");
 
-        var resourceFile = new ResourceFile();
+        jsonObject = jsonObject.ToDictionary(kvp => kvp.Key.Replace('.', '_'), kvp => kvp.Value.ConvertJsonToResxPlaceholder());
 
         foreach (var node in jsonObject)
         {
-            resourceFile.SetValue(node.Key.Replace('.', '_'), node.Value.ConvertJsonToResxPlaceholder());
+            output.SetValue(node.Key, node.Value);
         }
-        
-        return resourceFile;
+
+        var existingKeys = jsonObject.Keys.ToHashSet();
+
+        foreach (var key in output.GetKeys().Where(key => !existingKeys.Contains(key)))
+        {
+            output.RemoveValue(key);
+        }
+
+        return output;
     }
 
     private static void ConvertToResX(FileInfo input, FileInfo output)
     {
         var jsonContent = File.ReadAllText(input.FullName);
-        
-        var resourceFile = ConvertToResX(jsonContent);
-        
+
+        var resourceFile = ConvertToResX(jsonContent, new(output));
+
         resourceFile.Save(output.FullName);
 
         Console.WriteLine($"Successfully converted JSON to ResX: {output}");

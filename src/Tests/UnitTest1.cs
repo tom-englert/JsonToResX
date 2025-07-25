@@ -91,7 +91,7 @@ public class Tests
     [Test]
     public void TestResXToJson()
     {
-        var result = Infrastructure.ConvertToJson(new ResourceFile(XDocument.Parse(ResX)));
+        var result = Infrastructure.ConvertToJson(new(XDocument.Parse(ResX)));
 
         Assert.That(Normalize(result), Is.EqualTo(Normalize(Json)));
     }
@@ -99,7 +99,7 @@ public class Tests
     [Test]
     public void TestJsonToResX()
     {
-        var result = Infrastructure.ConvertToResX(Json);
+        var result = Infrastructure.ConvertToResX(Json, new());
 
         Assert.That(Normalize(result.ToString()), Is.EqualTo(Normalize(ResX)));
     }

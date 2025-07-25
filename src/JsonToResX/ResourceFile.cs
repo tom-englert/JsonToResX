@@ -90,9 +90,9 @@ public class ResourceFile
     private readonly XName _valueNodeName;
     private readonly XName _commentNodeName;
 
-    public ResourceFile(XDocument document)
+    public ResourceFile(XDocument? document)
     {
-        _document = document;
+        _document = document ?? XDocument.Parse(EmptyResXTemplate);
 
         var defaultNamespace = DocumentRoot.GetDefaultNamespace();
 
@@ -103,12 +103,17 @@ public class ResourceFile
         UpdateNodes();
     }
 
-    public ResourceFile(FileInfo file) : this(XDocument.Load(file.FullName))
+    public ResourceFile(FileInfo file) : this(file.Exists ? XDocument.Load(file.FullName) : null)
     {
     }
 
-    public ResourceFile() : this(XDocument.Parse(EmptyResXTemplate))
+    public ResourceFile() : this(default(XDocument))
     {
+    }
+
+    public ICollection<string> GetKeys()
+    {
+        return _nodes.Keys;
     }
 
     public ICollection<ResourceNode> GetNodes()
@@ -132,6 +137,14 @@ public class ResourceFile
         }
 
         node.Text = value;
+    }
+
+    public void RemoveEntry(string key)
+    {
+        if (!_nodes.Remove(key, out var node)) 
+            return;
+
+        node.Remove();
     }
 
     /// <summary>
@@ -210,6 +223,11 @@ public class ResourceFile
             var nameAttribute = GetNameAttribute(element);
             Key = nameAttribute.Value;
             _text = LoadText();
+        }
+
+        public void Remove()
+        {
+            Element.Remove();
         }
 
         private XElement Element { get; }

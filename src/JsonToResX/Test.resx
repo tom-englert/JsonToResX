@@ -66,5 +66,6 @@
   </data>
   <data name="app_greeting" xml:space="preserve">
     <value>Hello ${name}</value>
+    <comment>@MutedRule(PunctuationTail)</comment>
   </data>
 </root>
