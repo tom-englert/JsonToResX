@@ -76,7 +76,7 @@ internal static partial class Infrastructure
 
         foreach (var key in output.GetKeys().Where(key => !existingKeys.Contains(key)))
         {
-            output.RemoveValue(key);
+            output.RemoveEntry(key);
         }
 
         return output;
